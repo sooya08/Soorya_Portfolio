@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Work{% endblock %}
+{% block content %}
+<section>
+  <div class="sm">Internship and education</div><h2>Work.</h2>
+  <div class="tl">
+    <div class="tilt it"><h3>Web Development Intern</h3><small>DigiDARA Technologies Pvt. Ltd.</small>
+      <p>Built responsive frontend components with HTML, CSS and Bootstrap, and helped with backend logic and testing in Python.</p></div>
+    <div class="tilt it"><h3>B.Sc. Computer Science</h3><small>Alagappa Government Arts College, Karaikudi · 2023 – 2026 </small>
+      <p>71% so far, with a focus on software development, backend systems and web technologies.</p></div>
+    <div class="tilt it"><h3>Highlights</h3><small>Projects</small>
+      <p>AirGuardian predicts AQI with 85% accuracy. Faculty Publication Tracker manages 500+ publication records.</p></div>
+  </div>
+</section>
+<section>
+  <div class="sm">Proof of learning</div><h2>Certifications.</h2>
+  <div class="grid">
+    {% for c in certs %}
+    <div class="stage rv"><div class="tilt" data-t><div class="ico">{{ c[0] }}</div><h3>{{ c[1] }}</h3><p>{{ c[2] }}</p></div></div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

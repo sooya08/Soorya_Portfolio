@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta name="theme-color" content="#050816">
+  <meta name="description" content="Soorya J - Computer Science portfolio, web development, projects and technical skills.">
+
+  <title>{% block title %}Home{% endblock %} | Soorya J</title>
+
+  <!-- Google Font -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <!-- Main stylesheet -->
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='style.css') }}"
+  >
+</head>
+
+<body>
+
+  <!-- Animated Three.js background -->
+  <canvas id="gl" aria-hidden="true"></canvas>
+
+  <!-- Navigation -->
+  <nav>
+    <a class="brand" href="{{ url_for('home') }}">Soorya J</a>
+
+    <div>
+      {% for ep, label in [
+        ('home', 'Home'),
+        ('work', 'Work'),
+        ('projects', 'Projects'),
+        ('resume', 'Resume'),
+        ('contact', 'Contact')
+      ] %}
+        <a
+          href="{{ url_for(ep) }}"
+          {% if request.endpoint == ep %}class="on" aria-current="page"{% endif %}
+        >{{ label }}</a>
+      {% endfor %}
+    </div>
+  </nav>
+
+  <!-- Flask flash messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <div class="msg {{ category }}" role="status">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endwith %}
+
+  <!-- Page content -->
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    © 2025 Soorya J. All rights reserved. ·
+
+    <a
+      href="https://github.com/sooya08"
+      target="_blank"
+      rel="noopener noreferrer"
+    >GitHub</a> ·
+
+    <a
+      href="https://www.linkedin.com/in/soorya-soorya-a3a8a72a7"
+      target="_blank"
+      rel="noopener noreferrer"
+    >LinkedIn</a>
+  </footer>
+
+  <!-- Three.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <!-- Shared background animation and interactions -->
+  <script>
+    var S = {
+      hooks: [],
+      mx: 0,
+      my: 0
+    };
+
+    (function () {
+      var reducedMotion = window.matchMedia(
+        '(prefers-reduced-motion: reduce)'
+      ).matches;
+
+      // Reveal sections as they enter the viewport
+      if ('IntersectionObserver' in window) {
+        var io = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('on');
+                io.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.2 }
+        );
+
+        document.querySelectorAll('.rv, .it').forEach(function (el) {
+          io.observe(el);
+        });
+      } else {
+        document.querySelectorAll('.rv, .it').forEach(function (el) {
+          el.classList.add('on');
+        });
+      }
+
+      // Mouse tracking and profile-card tilt
+      document.addEventListener('pointermove', function (event) {
+        S.mx = event.clientX / window.innerWidth - 0.5;
+        S.my = event.clientY / window.innerHeight - 0.5;
+
+        var target = event.target.closest
+          ? event.target.closest('[data-t]')
+          : null;
+
+        if (!target || reducedMotion) return;
+
+        var rect = target.getBoundingClientRect();
+
+        if (!rect.width || !rect.height) return;
+
+        var x = (event.clientX - rect.left) / rect.width - 0.5;
+        var y = (event.clientY - rect.top) / rect.height - 0.5;
+
+        target.style.transform =
+          'rotateY(' + x * 20 + 'deg) ' +
+          'rotateX(' + (-y * 20) + 'deg)';
+      });
+
+      document.addEventListener('pointerout', function (event) {
+        var target = event.target.closest
+          ? event.target.closest('[data-t]')
+          : null;
+
+        var next = event.relatedTarget;
+
+        if (target && (!next || !target.contains(next))) {
+          target.style.transform = '';
+        }
+      });
+
+      // Initialize Three.js
+      if (!window.THREE) return;
+
+      var canvas = document.getElementById('gl');
+
+      if (!canvas) return;
+
+      var renderer;
+
+      try {
+        renderer = new THREE.WebGLRenderer({
+          canvas: canvas,
+          antialias: true,
+          alpha: true
+        });
+      } catch (error) {
+        console.warn('WebGL background could not be initialized.');
+        return;
+      }
+
+      renderer.setPixelRatio(
+        Math.min(window.devicePixelRatio || 1, 2)
+      );
+
+      var scene = new THREE.Scene();
+
+      var camera = new THREE.PerspectiveCamera(
+        60,
+        1,
+        0.1,
+        200
+      );
+
+      camera.position.z = 14;
+
+      // Make the scene available to page-specific scripts
+      S.scene = scene;
+
+      // Star particles
+      var particleCount = 2200;
+      var positions = new Float32Array(particleCount * 3);
+
+      for (var i = 0; i < particleCount; i++) {
+        positions[i * 3] = (Math.random() - 0.5) * 60;
+        positions[i * 3 + 1] = (Math.random() - 0.5) * 40;
+        positions[i * 3 + 2] = (Math.random() - 0.5) * 40;
+      }
+
+      var geometry = new THREE.BufferGeometry();
+
+      geometry.setAttribute(
+        'position',
+        new THREE.BufferAttribute(positions, 3)
+      );
+
+      var stars = new THREE.Points(
+        geometry,
+        new THREE.PointsMaterial({
+          color: 0x915eff,
+          size: 0.09,
+          transparent: true,
+          opacity: 0.85
+        })
+      );
+
+      scene.add(stars);
+
+      // Responsive renderer
+      function resizeScene() {
+        var width = window.innerWidth;
+        var height = window.innerHeight;
+
+        renderer.setSize(width, height, false);
+
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+      }
+
+      window.addEventListener('resize', resizeScene);
+      resizeScene();
+
+      // Animation loop
+      function animate() {
+        var doc = document.documentElement;
+
+        var maxScroll = Math.max(
+          1,
+          doc.scrollHeight - window.innerHeight
+        );
+
+        var scrollProgress = window.scrollY / maxScroll;
+
+        var time = performance.now() / 1000;
+
+        if (!reducedMotion) {
+          stars.rotation.y += 0.0006;
+        }
+
+        camera.position.x +=
+          (S.mx * 3 - camera.position.x) * 0.04;
+
+        camera.position.y +=
+          (
+            -S.my * 2 -
+            scrollProgress * 10 -
+            camera.position.y
+          ) * 0.04;
+
+        camera.lookAt(0, -scrollProgress * 10, 0);
+
+        // Run animations registered by individual pages
+        S.hooks.forEach(function (hook) {
+          hook(time, scrollProgress);
+        });
+
+        renderer.render(scene, camera);
+
+        window.requestAnimationFrame(animate);
+      }
+
+      animate();
+    })();
+  </script>
+
+  <!-- Page-specific scripts -->
+  {% block scripts %}{% endblock %}
+
+</body>
+</html>
+```

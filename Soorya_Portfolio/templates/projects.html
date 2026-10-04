@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Projects{% endblock %}
+{% block content %}
+<section>
+  <div class="sm">My work</div><h2>Projects.</h2>
+  <div class="grid">
+    {% for p in projects %}
+    <div class="fc rv" tabindex="0" role="button" aria-pressed="false" aria-label="Flip card for {{ p[1] }}">
+      <div class="fi">
+        <div class="face front">
+          <span class="sh"></span>
+          <div class="em">{{ p[0] }}</div>
+          <h3>{{ p[1] }}</h3>
+          <small class="tag">{{ p[3] }}</small>
+          <span class="hint">Hover or tap to flip</span>
+        </div>
+        <div class="face back">
+          <span class="sh"></span>
+          <h3>{{ p[1] }}</h3>
+          <p>{{ p[2] }}</p>
+          <a class="lk" href="{{ p[4] }}" target="_blank" rel="noopener">View on GitHub</a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  <p style="text-align:center;margin-top:2.5rem"><a class="btn" href="https://github.com/sooya08?tab=repositories" target="_blank" rel="noopener">More on GitHub</a></p>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.querySelectorAll('.fc').forEach(function (c) {
+  function flip() { var on = c.classList.toggle('flipped'); c.setAttribute('aria-pressed', on); }
+  c.addEventListener('click', function (e) { if (!e.target.closest('a')) flip(); });
+  c.addEventListener('keydown', function (e) {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target === c) { e.preventDefault(); flip(); }
+  });
+});
+</script>
+{% endblock %}

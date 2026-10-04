@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Contact{% endblock %}
+{% block content %}
+<section>
+  <div class="sm">Get in touch</div><h2>Contact.</h2>
+  <div class="tilt fm">
+    <div class="info">
+      <h3>Let's talk</h3>
+      <p>Have a project, an internship or an idea? Send me a message and I will reply as soon as I can.</p>
+      <p>Email<br><a class="lk" href="mailto:sooryas851@gmail.com">sooryas851@gmail.com</a></p>
+      <p>GitHub<br><a class="lk" href="https://github.com/sooya08" target="_blank" rel="noopener">github.com/sooya08</a></p>
+      <p>LinkedIn<br><a class="lk" href="https://www.linkedin.com/in/soorya-soorya-a3a8a72a7" target="_blank" rel="noopener">linkedin.com/in/soorya-soorya</a></p>
+    </div>
+    <form method="POST" action="{{ url_for('contact') }}">
+      <label>Your Name<input type="text" name="name" required placeholder="What's your name?"></label>
+      <label>Your Email<input type="email" name="email" required placeholder="What's your email?"></label>
+      <label>Your Message<textarea name="message" rows="5" required placeholder="What do you want to say?"></textarea></label>
+      <button type="submit" class="btn f">Send</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

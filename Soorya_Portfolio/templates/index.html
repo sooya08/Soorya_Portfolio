@@ -1,0 +1,678 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+<!-- ================= HERO SECTION ================= -->
+<section class="hero">
+  <h1>Hi, I'm <span>Soorya J</span></h1>
+
+  <p style="font-size:1.2rem;max-width:32rem">
+    M.Sc. Computer Science ·
+    <b id="role" style="color:var(--c)">Web Developer</b>
+    <br>
+    Passionate about coding, solving problems and creating impactful projects.
+  </p>
+
+  <div>
+    <a class="btn f" href="{{ url_for('projects') }}">
+      View my projects
+    </a>
+    <a class="btn" href="{{ url_for('resume') }}">Resume</a>
+  </div>
+</section>
+
+<!-- ================= ABOUT SECTION ================= -->
+<section>
+  <div class="row">
+    <div class="stage">
+      <div class="tilt me" data-t>
+        <div class="ph" aria-hidden="true">S</div>
+        <img
+          src="{{ url_for('static', filename='soorya_img_port.jpg') }}"
+          alt="Soorya J"
+          onerror="this.style.display='none'"
+        >
+      </div>
+    </div>
+
+    <div style="max-width:38rem" class="rv">
+      <div class="sm">Introduction</div>
+      <h2>About me.</h2>
+
+      <p>
+        I am a detail-oriented Computer Science undergraduate with
+        strong foundations in software development, backend systems
+        and web technologies. I have hands-on experience in Python,
+        Flask, MySQL and machine learning projects, and I enjoy
+        building scalable, data-driven applications.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SKILLS SECTION ================= -->
+<section id="skills">
+  <div class="sm">Tools</div>
+  <h2>Skills.</h2>
+
+  <p style="max-width:38rem">
+    Explore my technical skills in an interactive solar system.
+    Each skill follows its own circular orbit with a gentle
+    floating motion. Drag the bubbles to interact with them.
+  </p>
+
+  <div class="ctl">
+    <button
+      class="btn f"
+      id="gravityToggle"
+      type="button"
+      aria-pressed="true"
+    >
+      Pause Orbits
+    </button>
+
+    <button
+      class="btn"
+      id="resetSkills"
+      type="button"
+    >
+      Reset Skills
+    </button>
+  </div>
+
+  <div
+    class="pit"
+    id="skillPit"
+    aria-label="Interactive solar system of technical skills"
+  >
+    <div class="sun" aria-hidden="true"></div>
+
+    {% for s in skills %}
+      <div class="ball" tabindex="0" role="button"
+           aria-label="{{ s }}">{{ s }}</div>
+    {% endfor %}
+  </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+
+<!-- ================= ROTATING JOB TITLE ================= -->
+<script>
+(function () {
+  var roles = [
+    'Web Developer',
+    'Java Programmer',
+    'Machine Learning Explorer',
+    'Problem Solver'
+  ];
+
+  var index = 0;
+  var roleElement = document.getElementById('role');
+
+  window.setInterval(function () {
+    if (!roleElement) return;
+
+    index = (index + 1) % roles.length;
+    roleElement.textContent = roles[index];
+  }, 2200);
+})();
+</script>
+
+<!-- ================= THREE.JS NETWORK ORB ================= -->
+<script>
+(function () {
+  if (!window.THREE || !window.S || !S.scene) return;
+
+  var reducedMotion = window.matchMedia(
+    '(prefers-reduced-motion: reduce)'
+  ).matches;
+
+  var desk = new THREE.Group();
+  S.scene.add(desk);
+
+  var net = new THREE.Group();
+  desk.add(net);
+
+  net.add(new THREE.Mesh(
+    new THREE.IcosahedronGeometry(0.95, 1),
+    new THREE.MeshBasicMaterial({
+      color: 0x915eff,
+      wireframe: true
+    })
+  ));
+
+  net.add(new THREE.Mesh(
+    new THREE.SphereGeometry(0.38, 24, 24),
+    new THREE.MeshBasicMaterial({ color: 0xb79bff })
+  ));
+
+  var points = [];
+  var pointCount = 70;
+
+  for (var i = 0; i < pointCount; i++) {
+    var y = 1 - 2 * (i + 0.5) / pointCount;
+    var radius = Math.sqrt(1 - y * y);
+    var angle = i * 2.39996;
+
+    points.push(new THREE.Vector3(
+      Math.cos(angle) * radius * 2.6,
+      y * 2.6,
+      Math.sin(angle) * radius * 2.6
+    ));
+  }
+
+  var nodeGeometry = new THREE.SphereGeometry(0.07, 10, 10);
+  var nodeMaterial = new THREE.MeshBasicMaterial({
+    color: 0x4fd1ff
+  });
+
+  points.forEach(function (point) {
+    var node = new THREE.Mesh(nodeGeometry, nodeMaterial);
+    node.position.copy(point);
+    net.add(node);
+  });
+
+  var linePoints = [];
+
+  for (var a = 0; a < pointCount; a++) {
+    for (var b = a + 1; b < pointCount; b++) {
+      if (points[a].distanceTo(points[b]) < 1.55) {
+        linePoints.push(points[a], points[b]);
+      }
+    }
+  }
+
+  net.add(new THREE.LineSegments(
+    new THREE.BufferGeometry().setFromPoints(linePoints),
+    new THREE.LineBasicMaterial({
+      color: 0x4fd1ff,
+      transparent: true,
+      opacity: 0.3
+    })
+  ));
+
+  function createLabel(text) {
+    var canvas = document.createElement('canvas');
+    canvas.width = 256;
+    canvas.height = 96;
+
+    var ctx = canvas.getContext('2d');
+
+    ctx.beginPath();
+    ctx.arc(48, 48, 42, Math.PI / 2, Math.PI * 1.5);
+    ctx.arc(208, 48, 42, -Math.PI / 2, Math.PI / 2);
+    ctx.closePath();
+
+    ctx.fillStyle = 'rgba(21,16,48,0.94)';
+    ctx.fill();
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = '#915eff';
+    ctx.stroke();
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 40px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(text, 128, 50);
+
+    var sprite = new THREE.Sprite(
+      new THREE.SpriteMaterial({
+        map: new THREE.CanvasTexture(canvas),
+        transparent: true
+      })
+    );
+
+    sprite.scale.set(1.7, 0.64, 1);
+    return sprite;
+  }
+
+  var tilts = [
+    [0.9, 0],
+    [-0.6, 0.8],
+    [0.2, -1.1]
+  ];
+
+  var names = [
+    'Python', 'Flask', 'MySQL',
+    'JavaScript', 'ML', 'Git'
+  ];
+
+  var orbs = [];
+
+  tilts.forEach(function (tilt, index) {
+    var orbit = new THREE.Group();
+    orbit.rotation.set(tilt[0], 0, tilt[1]);
+    net.add(orbit);
+
+    orbit.add(new THREE.Mesh(
+      new THREE.TorusGeometry(3.8, 0.014, 8, 120),
+      new THREE.MeshBasicMaterial({
+        color: index % 2 ? 0x4fd1ff : 0x915eff,
+        transparent: true,
+        opacity: 0.7
+      })
+    ));
+
+    [0, Math.PI].forEach(function (offset, j) {
+      var name = names[index * 2 + j];
+      if (!name) return;
+
+      var sprite = createLabel(name);
+      orbit.add(sprite);
+
+      orbs.push({
+        sprite: sprite,
+        angle: offset + index,
+        speed: 0.004 + index * 0.0012
+      });
+    });
+  });
+
+  var desktopX = 4.2;
+
+  function resizeOrb() {
+    var mobile = window.innerWidth < 700;
+    desktopX = mobile ? -0.3 : 4.2;
+    desk.scale.setScalar(mobile ? 0.5 : 0.95);
+  }
+
+  window.addEventListener('resize', resizeOrb);
+  resizeOrb();
+
+  S.hooks.push(function (time, progress) {
+    desk.position.x =
+      desktopX + Math.min(1, progress * 6) * 18;
+
+    desk.position.y =
+      0.2 - progress * 10 + Math.sin(time) * 0.1;
+
+    desk.rotation.y +=
+      (S.mx * 0.6 - desk.rotation.y) * 0.05;
+
+    desk.rotation.x +=
+      (S.my * 0.4 - desk.rotation.x) * 0.05;
+
+    if (!reducedMotion) {
+      net.rotation.y += 0.004;
+      net.rotation.z = Math.sin(time * 0.3) * 0.12;
+
+      orbs.forEach(function (orb) {
+        orb.angle += orb.speed;
+        orb.sprite.position.set(
+          Math.cos(orb.angle) * 3.8,
+          Math.sin(orb.angle) * 3.8,
+          0
+        );
+      });
+    }
+  });
+})();
+</script>
+
+<!-- ================= SOLAR-SYSTEM SKILLS ENGINE ================= -->
+<script>
+(function () {
+  var pit = document.getElementById('skillPit');
+  var toggle = document.getElementById('gravityToggle');
+  var reset = document.getElementById('resetSkills');
+
+  if (!pit || !toggle || !reset) return;
+
+  var elements = Array.from(pit.querySelectorAll('.ball'));
+  if (!elements.length) return;
+
+  var reducedMotion = window.matchMedia(
+    '(prefers-reduced-motion: reduce)'
+  ).matches;
+
+  var width = 0;
+  var height = 0;
+  var centerX = 0;
+  var centerY = 0;
+
+  var running = !reducedMotion;
+  var draggingItem = null;
+  var animationFrame = 0;
+  var lastTime = 0;
+  var elapsed = 0;
+
+  var items = elements.map(function (element, index) {
+    return {
+      el: element,
+      index: index,
+      size: 96,
+      angle: (index / elements.length) * Math.PI * 2,
+      radiusX: 0,
+      radiusY: 0,
+      speed: 0.22 + (index % 5) * 0.045,
+      phase: index * 1.7,
+      x: 0,
+      y: 0,
+      vx: 0,
+      vy: 0,
+      dragging: false,
+      pointerId: null,
+      offsetX: 0,
+      offsetY: 0,
+      lastX: 0,
+      lastY: 0,
+      moveX: 0,
+      moveY: 0
+    };
+  });
+
+  function measure() {
+    width = pit.clientWidth;
+    height = pit.clientHeight;
+    centerX = width / 2;
+    centerY = height / 2;
+
+    var maxRadiusX = Math.max(0, (width - 100) / 2);
+    var maxRadiusY = Math.max(0, (height - 100) / 2);
+
+    items.forEach(function (item, index) {
+      item.size = item.el.offsetWidth || 96;
+
+      var ring = 0.35 + (index % 4) * 0.19;
+
+      item.radiusX = Math.min(
+        maxRadiusX * ring,
+        Math.max(0, (width - item.size) / 2)
+      );
+
+      item.radiusY = Math.min(
+        maxRadiusY * ring,
+        Math.max(0, (height - item.size) / 2)
+      );
+    });
+  }
+
+  function render(item) {
+    item.el.style.transform =
+      'translate3d(' + item.x + 'px,' +
+      item.y + 'px,0)';
+  }
+
+  function positionOnOrbit(item, time) {
+    var bob = Math.sin(
+      time * 1.5 + item.phase
+    ) * Math.min(12, height * 0.025);
+
+    item.x = centerX +
+      Math.cos(item.angle) * item.radiusX -
+      item.size / 2;
+
+    item.y = centerY +
+      Math.sin(item.angle) * item.radiusY +
+      bob -
+      item.size / 2;
+
+    item.x = Math.max(
+      0, Math.min(item.x, width - item.size)
+    );
+
+    item.y = Math.max(
+      0, Math.min(item.y, height - item.size)
+    );
+
+    render(item);
+  }
+
+  function resetPositions() {
+    measure();
+    elapsed = 0;
+    lastTime = 0;
+
+    items.forEach(function (item, index) {
+      item.angle =
+        (index / items.length) * Math.PI * 2;
+
+      item.vx = 0;
+      item.vy = 0;
+      item.dragging = false;
+      item.pointerId = null;
+
+      item.el.style.zIndex = '';
+      item.el.style.cursor = 'grab';
+
+      positionOnOrbit(item, 0);
+    });
+  }
+
+  function animate(timestamp) {
+    if (!running) return;
+
+    if (!lastTime) lastTime = timestamp;
+
+    var dt = Math.min(
+      (timestamp - lastTime) / 1000,
+      0.04
+    );
+
+    lastTime = timestamp;
+    elapsed += dt;
+
+    items.forEach(function (item) {
+      if (item.dragging) return;
+
+      item.angle += item.speed * dt;
+      positionOnOrbit(item, elapsed);
+    });
+
+    animationFrame = requestAnimationFrame(animate);
+  }
+
+  function startAnimation() {
+    if (running) return;
+
+    running = true;
+    lastTime = 0;
+    toggle.textContent = 'Pause Orbits';
+    toggle.setAttribute('aria-pressed', 'true');
+
+    animationFrame = requestAnimationFrame(animate);
+  }
+
+  function stopAnimation() {
+    running = false;
+    cancelAnimationFrame(animationFrame);
+
+    toggle.textContent = 'Start Orbits';
+    toggle.setAttribute('aria-pressed', 'false');
+  }
+
+  // Drag the bubbles using a mouse or touchscreen.
+  items.forEach(function (item) {
+    var element = item.el;
+
+    element.style.position = 'absolute';
+    element.style.left = '0';
+    element.style.top = '0';
+    element.style.margin = '0';
+    element.style.animation = 'none';
+    element.style.cursor = 'grab';
+    element.style.touchAction = 'none';
+    element.style.userSelect = 'none';
+
+    element.addEventListener('pointerdown', function (event) {
+      if (event.button !== undefined && event.button !== 0) {
+        return;
+      }
+
+      event.preventDefault();
+
+      item.dragging = true;
+      item.pointerId = event.pointerId;
+      item.vx = 0;
+      item.vy = 0;
+
+      var rect = pit.getBoundingClientRect();
+
+      item.offsetX =
+        event.clientX - rect.left - item.x;
+
+      item.offsetY =
+        event.clientY - rect.top - item.y;
+
+      item.lastX = event.clientX;
+      item.lastY = event.clientY;
+
+      item.moveX = 0;
+      item.moveY = 0;
+
+      draggingItem = item;
+      element.style.zIndex = '5';
+      element.style.cursor = 'grabbing';
+
+      element.setPointerCapture(event.pointerId);
+    });
+
+    element.addEventListener('pointermove', function (event) {
+      if (
+        !item.dragging ||
+        event.pointerId !== item.pointerId
+      ) return;
+
+      var rect = pit.getBoundingClientRect();
+
+      item.moveX = event.clientX - item.lastX;
+      item.moveY = event.clientY - item.lastY;
+
+      item.lastX = event.clientX;
+      item.lastY = event.clientY;
+
+      item.x = Math.max(
+        0,
+        Math.min(
+          event.clientX - rect.left - item.offsetX,
+          width - item.size
+        )
+      );
+
+      item.y = Math.max(
+        0,
+        Math.min(
+          event.clientY - rect.top - item.offsetY,
+          height - item.size
+        )
+      );
+
+      render(item);
+    });
+
+    function release(event) {
+      if (
+        !item.dragging ||
+        (
+          event &&
+          event.pointerId !== undefined &&
+          event.pointerId !== item.pointerId
+        )
+      ) return;
+
+      item.dragging = false;
+      item.pointerId = null;
+      draggingItem = null;
+
+      element.style.zIndex = '';
+      element.style.cursor = 'grab';
+
+      // Convert the released position into an orbit.
+      var dx = item.x + item.size / 2 - centerX;
+      var dy = item.y + item.size / 2 - centerY;
+
+      item.angle = Math.atan2(
+        dy / Math.max(1, item.radiusY),
+        dx / Math.max(1, item.radiusX)
+      );
+
+      if (running) {
+        item.radiusX = Math.min(
+          Math.abs(dx),
+          Math.max(0, (width - item.size) / 2)
+        );
+
+        item.radiusY = Math.min(
+          Math.abs(dy),
+          Math.max(0, (height - item.size) / 2)
+        );
+      }
+    }
+
+    element.addEventListener('pointerup', release);
+    element.addEventListener('pointercancel', release);
+    element.addEventListener('lostpointercapture', release);
+
+    // Keyboard controls.
+    element.addEventListener('keydown', function (event) {
+      var step = 15;
+
+      if (![
+        'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'
+      ].includes(event.key)) return;
+
+      event.preventDefault();
+
+      if (event.key === 'ArrowLeft') item.angle -= 0.2;
+      if (event.key === 'ArrowRight') item.angle += 0.2;
+      if (event.key === 'ArrowUp') item.radiusY = Math.max(
+        0, item.radiusY - step
+      );
+      if (event.key === 'ArrowDown') item.radiusY = Math.min(
+        Math.max(0, (height - item.size) / 2),
+        item.radiusY + step
+      );
+    });
+  });
+
+  // Pause and resume the circular movement.
+  toggle.addEventListener('click', function () {
+    if (running) {
+      stopAnimation();
+    } else {
+      startAnimation();
+    }
+  });
+
+  // Restore the solar-system arrangement.
+  reset.addEventListener('click', function () {
+    resetPositions();
+
+    if (!running) {
+      startAnimation();
+    } else {
+      cancelAnimationFrame(animationFrame);
+      lastTime = 0;
+      animationFrame = requestAnimationFrame(animate);
+    }
+  });
+
+  window.addEventListener('resize', function () {
+    measure();
+
+    items.forEach(function (item) {
+      positionOnOrbit(item, elapsed);
+    });
+  });
+
+  // Initialize.
+  measure();
+  resetPositions();
+
+  toggle.textContent = running
+    ? 'Pause Orbits'
+    : 'Start Orbits';
+
+  toggle.setAttribute('aria-pressed', String(running));
+
+  if (running) {
+    animationFrame = requestAnimationFrame(animate);
+  }
+})();
+</script>
+
+{% endblock %}
+```
